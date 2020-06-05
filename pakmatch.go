@@ -100,7 +100,7 @@ func (bb *BBPakMatcher) FindPhysicalPackages() {
 			if strings.HasPrefix(path.Base(pth), pkg.name+"_"+pkg.version) {
 				p, err := deb.OpenPackageFile(pth, false)
 				if err != nil {
-					fmt.Println("Bliat...", err.Error())
+					fmt.Println("Error opening package:", err.Error())
 				}
 				fmt.Println("Package:", p.ControlFile().Package())
 				fmt.Println("Maintainer:", p.ControlFile().Maintainer())
@@ -118,6 +118,7 @@ func (bb *BBPakMatcher) FindManifests() {
 		fmt.Println(">>>", err)
 	} else {
 		fmt.Println("Manifest:", bb.manifest)
+
 		bb.ParseManifestPackages()
 		bb.FindPhysicalPackages()
 
