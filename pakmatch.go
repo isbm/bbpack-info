@@ -12,15 +12,18 @@ import (
 )
 
 type PackageMeta struct {
-	name    string
-	version string
+	name       string
+	version    string
+	licence    string
+	maintainer string
+	size       int
 }
 
 // BBPakMatcher class
 type BBPakMatcher struct {
 	root     string
 	manifest string
-	pkgs     []PackageMeta
+	pkgs     []*PackageMeta
 	pkgPaths []string
 }
 
@@ -28,7 +31,7 @@ type BBPakMatcher struct {
 func NewBBPakMatcher(path string) *BBPakMatcher {
 	bb := new(BBPakMatcher)
 	bb.root = path
-	bb.pkgs = make([]PackageMeta, 0)
+	bb.pkgs = make([]*PackageMeta, 0)
 	bb.pkgPaths = make([]string, 0)
 	return bb
 }
@@ -70,14 +73,14 @@ func (bb *BBPakMatcher) ParseManifestPackages() {
 		}
 
 		if line == "" {
-			bb.pkgs = append(bb.pkgs, *bb.parsePackageSection(buff))
+			bb.pkgs = append(bb.pkgs, bb.parsePackageSection(buff))
 			buff = nil
 		} else {
 			buff = append(buff, line)
 		}
 	}
 	if buff != nil {
-		bb.pkgs = append(bb.pkgs, *bb.parsePackageSection(buff))
+		bb.pkgs = append(bb.pkgs, bb.parsePackageSection(buff))
 	}
 }
 
@@ -87,26 +90,46 @@ func (bb *BBPakMatcher) findManifest(pth string, info os.FileInfo, err error) er
 	}
 	if strings.HasSuffix(pth, ".rootfs.opkg.status") {
 		bb.manifest = pth
-	} else if strings.HasSuffix(pth, ".ipk") {
+	} else if strings.HasSuffix(pth, ".ipk") { // opkg!
 		bb.pkgPaths = append(bb.pkgPaths, pth)
 	}
 	return nil
 }
 
+func (bb *BBPakMatcher) prepareVersion(ver string) string {
+	if strings.Contains(ver, ":") {
+		return strings.Split(ver, ":")[1]
+	}
+	return ver
+}
+
 func (bb *BBPakMatcher) FindPhysicalPackages() {
 	// This is terrible
+	missing := make([]string, 0)
 	for _, pkg := range bb.pkgs {
+		found := false
 		for _, pth := range bb.pkgPaths {
-			if strings.HasPrefix(path.Base(pth), pkg.name+"_"+pkg.version) {
+			if strings.HasPrefix(path.Base(pth), pkg.name) && strings.Contains(pth, bb.prepareVersion(pkg.version)) {
 				p, err := deb.OpenPackageFile(pth, false)
 				if err != nil {
 					fmt.Println("Error opening package:", err.Error())
 				}
-				fmt.Println("Package:", p.ControlFile().Package())
-				fmt.Println("Maintainer:", p.ControlFile().Maintainer())
-				fmt.Println("Version:", p.ControlFile().Version())
-				os.Exit(1)
+				pkg.licence = p.ControlFile().Licence()
+				pkg.version = p.ControlFile().Version()
+				pkg.maintainer = p.ControlFile().Maintainer()
+				pkg.size = int(p.FileSize())
+				found = true
 			}
+		}
+		if !found {
+			missing = append(missing, pkg.name+"("+pkg.version+")")
+		}
+	}
+
+	if len(missing) > 0 {
+		fmt.Println("Missing:", len(missing))
+		for i, p := range missing {
+			fmt.Println(i+1, p)
 		}
 	}
 }
@@ -122,8 +145,9 @@ func (bb *BBPakMatcher) FindManifests() {
 		bb.ParseManifestPackages()
 		bb.FindPhysicalPackages()
 
+		fmt.Println("Num,Name,Version,Licence,Maintainer,Size")
 		for num, p := range bb.pkgs {
-			fmt.Printf("%d. %s (%s)\n", num+1, p.name, p.version)
+			fmt.Printf("%d,%s,%s,%s,%s,%d\n", num+1, p.name, p.version, p.licence, p.maintainer, p.size)
 		}
 	}
 }
