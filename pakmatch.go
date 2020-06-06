@@ -11,14 +11,6 @@ import (
 	"github.com/isbm/go-deb"
 )
 
-type PackageMeta struct {
-	name       string
-	version    string
-	licence    string
-	maintainer string
-	size       int
-}
-
 // BBPakMatcher class
 type BBPakMatcher struct {
 	root     string
@@ -90,7 +82,7 @@ func (bb *BBPakMatcher) findManifest(pth string, info os.FileInfo, err error) er
 	}
 	if strings.HasSuffix(pth, ".rootfs.opkg.status") {
 		bb.manifest = pth
-	} else if strings.HasSuffix(pth, ".ipk") { // opkg!
+	} else if strings.HasSuffix(pth, ".ipk") {
 		bb.pkgPaths = append(bb.pkgPaths, pth)
 	}
 	return nil
@@ -114,10 +106,7 @@ func (bb *BBPakMatcher) FindPhysicalPackages() {
 				if err != nil {
 					fmt.Println("Error opening package:", err.Error())
 				}
-				pkg.licence = p.ControlFile().Licence()
-				pkg.version = p.ControlFile().Version()
-				pkg.maintainer = p.ControlFile().Maintainer()
-				pkg.size = int(p.FileSize())
+				pkg.SetPackageFile(p)
 				found = true
 			}
 		}
@@ -145,10 +134,5 @@ func (bb *BBPakMatcher) FindManifests() {
 
 		bb.ParseManifestPackages()
 		bb.FindPhysicalPackages()
-
-		fmt.Println("Num,Name,Version,Licence,Maintainer,Size")
-		for num, p := range bb.pkgs {
-			fmt.Printf("%d,%s,%s,%s,%s,%d\n", num+1, p.name, p.version, p.licence, p.maintainer, p.size)
-		}
 	}
 }
