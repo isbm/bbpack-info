@@ -30,7 +30,11 @@ func (bbp *BBPakJSONFormat) Format() string {
 		out[pkgName] = pkgInfo
 	}
 
-	jsonData, _ := json.Marshal(out)
+	jsonData, err := json.Marshal(out)
+	if err != nil {
+		fmt.Println("Error:", err.Error())
+		os.Exit(1)
+	}
 	var formatted bytes.Buffer
 	json.Indent(&formatted, jsonData, "", "\t")
 
