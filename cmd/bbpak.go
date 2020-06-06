@@ -35,12 +35,18 @@ func main() {
 			&cli.StringFlag{
 				Aliases: []string{"m"},
 				Name:    "manifest",
-				Usage:   "Name of the manifest",
+				Usage:   "Name of the manifest to reference package index",
+			},
+			&cli.StringFlag{
+				Aliases: []string{"f"},
+				Name:    "format",
+				Usage:   "Output in: csv, md, json, txt",
+				Value:   "txt",
 			},
 			&cli.BoolFlag{
 				Aliases: []string{"l"},
 				Name:    "list",
-				Usage:   "List found manifests",
+				Usage:   "List available manifests",
 			},
 		},
 	}
