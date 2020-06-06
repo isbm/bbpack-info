@@ -141,6 +141,10 @@ func (bb *BBPakMatcher) Format(fmtype string) {
 	switch fmtype {
 	case "csv":
 		formatter = bbpak_formatters.NewBBPakCSVFormat()
+	case "json":
+		formatter = bbpak_formatters.NewBBPakJSONFormat()
+	case "md":
+		formatter = bbpak_formatters.NewBBPakMarkdownFormat()
 	default:
 		formatter = bbpak_formatters.NewBBPakTextFormat()
 	}
