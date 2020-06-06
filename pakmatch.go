@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	bbpak_paktype "github.com/isbm/bbpack-info/paktype"
 	"github.com/isbm/go-deb"
 )
 
@@ -15,7 +16,7 @@ import (
 type BBPakMatcher struct {
 	root     string
 	manifest string
-	pkgs     []*PackageMeta
+	pkgs     []*bbpak_paktype.PackageMeta
 	pkgPaths []string
 }
 
@@ -23,13 +24,13 @@ type BBPakMatcher struct {
 func NewBBPakMatcher(path string) *BBPakMatcher {
 	bb := new(BBPakMatcher)
 	bb.root = path
-	bb.pkgs = make([]*PackageMeta, 0)
+	bb.pkgs = make([]*bbpak_paktype.PackageMeta, 0)
 	bb.pkgPaths = make([]string, 0)
 	return bb
 }
 
-func (bb *BBPakMatcher) parsePackageSection(buff []string) *PackageMeta {
-	meta := new(PackageMeta)
+func (bb *BBPakMatcher) parsePackageSection(buff []string) *bbpak_paktype.PackageMeta {
+	meta := new(bbpak_paktype.PackageMeta)
 	for _, line := range buff {
 		parts := strings.Split(line, " ")
 		if len(parts) < 1 {
@@ -37,12 +38,12 @@ func (bb *BBPakMatcher) parsePackageSection(buff []string) *PackageMeta {
 		}
 		switch parts[0] {
 		case "Package:":
-			meta.name = parts[1]
+			meta.SetName(parts[1])
 		case "Version:":
-			meta.version = parts[1]
+			meta.SetVersion(parts[1])
 		}
 	}
-	if meta.name == "" {
+	if meta.Version() == "" {
 		panic("Oops, name of the package is missing. The rest of the data does not matter therefore. Your status file seems just broken.")
 	}
 
@@ -101,7 +102,7 @@ func (bb *BBPakMatcher) FindPhysicalPackages() {
 	for _, pkg := range bb.pkgs {
 		found := false
 		for _, pth := range bb.pkgPaths {
-			if strings.HasPrefix(path.Base(pth), pkg.name+"_") && strings.Contains(pth, bb.prepareVersion(pkg.version)) {
+			if strings.HasPrefix(path.Base(pth), pkg.Name()+"_") && strings.Contains(pth, bb.prepareVersion(pkg.Version())) {
 				p, err := deb.OpenPackageFile(pth, false)
 				if err != nil {
 					fmt.Println("Error opening package:", err.Error())
@@ -111,7 +112,7 @@ func (bb *BBPakMatcher) FindPhysicalPackages() {
 			}
 		}
 		if !found {
-			missing = append(missing, pkg.name+"("+pkg.version+")")
+			missing = append(missing, pkg.Name()+"("+pkg.Version()+")")
 		}
 	}
 
@@ -134,5 +135,6 @@ func (bb *BBPakMatcher) FindManifests() {
 
 		bb.ParseManifestPackages()
 		bb.FindPhysicalPackages()
+
 	}
 }
