@@ -1,14 +1,16 @@
 package bbpak_formatters
 
-import bbpak "github.com/isbm/bbpack-info"
+import (
+	bbpak_paktype "github.com/isbm/bbpack-info/paktype"
+)
 
 type BBPakMarkdownFormat struct {
-	packages []*bbpak.PackageMeta
+	packages []*bbpak_paktype.PackageMeta
 }
 
 func NewBBPakMarkdownFormat() *BBPakMarkdownFormat {
 	bbp := new(BBPakMarkdownFormat)
-	bbp.packages = make([]*bbpak.PackageMeta, 0)
+	bbp.packages = make([]*bbpak_paktype.PackageMeta, 0)
 
 	return bbp
 }
@@ -19,6 +21,6 @@ func (bbp *BBPakMarkdownFormat) Format() string {
 }
 
 // SetPackages has been already collected and ready to format the output
-func (bbp *BBPakMarkdownFormat) SetPackages(packages []*bbpak.PackageMeta) {
+func (bbp *BBPakMarkdownFormat) SetPackages(packages []*bbpak_paktype.PackageMeta) {
 	bbp.packages = packages
 }

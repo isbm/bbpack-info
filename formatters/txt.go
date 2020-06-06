@@ -1,14 +1,19 @@
 package bbpak_formatters
 
-import bbpak "github.com/isbm/bbpack-info"
+import (
+	"fmt"
+	"strings"
+
+	bbpak_paktype "github.com/isbm/bbpack-info/paktype"
+)
 
 type BBPakTextFormat struct {
-	packages []*bbpak.PackageMeta
+	packages []*bbpak_paktype.PackageMeta
 }
 
 func NewBBPakTextFormat() *BBPakTextFormat {
 	bbp := new(BBPakTextFormat)
-	bbp.packages = make([]*bbpak.PackageMeta, 0)
+	bbp.packages = make([]*bbpak_paktype.PackageMeta, 0)
 
 	return bbp
 }
@@ -19,6 +24,6 @@ func (bbp *BBPakTextFormat) Format() string {
 }
 
 // SetPackages has been already collected and ready to format the output
-func (bbp *BBPakTextFormat) SetPackages(packages []*bbpak.PackageMeta) {
+func (bbp *BBPakTextFormat) SetPackages(packages []*bbpak_paktype.PackageMeta) {
 	bbp.packages = packages
 }
