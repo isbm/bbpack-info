@@ -6,5 +6,6 @@ import (
 
 type BBPakFormatter interface {
 	Format() string
-	SetPackages(packages []*bbpak_paktype.PackageMeta)
+	SetPackages(packages map[string]*bbpak_paktype.PackageMeta)
+	ByteIEC(b uint64) string
 }

@@ -5,12 +5,13 @@ import (
 )
 
 type BBPakMarkdownFormat struct {
-	packages []*bbpak_paktype.PackageMeta
+	packages map[string]*bbpak_paktype.PackageMeta
+	BBPakFormatterUtils
 }
 
 func NewBBPakMarkdownFormat() *BBPakMarkdownFormat {
 	bbp := new(BBPakMarkdownFormat)
-	bbp.packages = make([]*bbpak_paktype.PackageMeta, 0)
+	bbp.packages = make(map[string]*bbpak_paktype.PackageMeta)
 
 	return bbp
 }
@@ -21,6 +22,6 @@ func (bbp *BBPakMarkdownFormat) Format() string {
 }
 
 // SetPackages has been already collected and ready to format the output
-func (bbp *BBPakMarkdownFormat) SetPackages(packages []*bbpak_paktype.PackageMeta) {
+func (bbp *BBPakMarkdownFormat) SetPackages(packages map[string]*bbpak_paktype.PackageMeta) {
 	bbp.packages = packages
 }

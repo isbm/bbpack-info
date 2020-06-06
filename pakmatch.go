@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	bbpak_formatters "github.com/isbm/bbpack-info/formatters"
+
 	bbpak_paktype "github.com/isbm/bbpack-info/paktype"
 	"github.com/isbm/go-deb"
 )
@@ -16,7 +18,7 @@ import (
 type BBPakMatcher struct {
 	root     string
 	manifest string
-	pkgs     []*bbpak_paktype.PackageMeta
+	pkgs     map[string]*bbpak_paktype.PackageMeta
 	pkgPaths []string
 }
 
@@ -24,7 +26,7 @@ type BBPakMatcher struct {
 func NewBBPakMatcher(path string) *BBPakMatcher {
 	bb := new(BBPakMatcher)
 	bb.root = path
-	bb.pkgs = make([]*bbpak_paktype.PackageMeta, 0)
+	bb.pkgs = make(map[string]*bbpak_paktype.PackageMeta)
 	bb.pkgPaths = make([]string, 0)
 	return bb
 }
@@ -58,6 +60,7 @@ func (bb *BBPakMatcher) ParseManifestPackages() {
 
 	scanner := bufio.NewScanner(f)
 	var buff []string = nil
+	var pkgMeta *bbpak_paktype.PackageMeta
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 
@@ -66,14 +69,16 @@ func (bb *BBPakMatcher) ParseManifestPackages() {
 		}
 
 		if line == "" {
-			bb.pkgs = append(bb.pkgs, bb.parsePackageSection(buff))
+			pkgMeta = bb.parsePackageSection(buff)
+			bb.pkgs[pkgMeta.Name()] = pkgMeta
 			buff = nil
 		} else {
 			buff = append(buff, line)
 		}
 	}
 	if buff != nil {
-		bb.pkgs = append(bb.pkgs, bb.parsePackageSection(buff))
+		pkgMeta = bb.parsePackageSection(buff)
+		bb.pkgs[pkgMeta.Name()] = pkgMeta
 	}
 }
 
@@ -125,6 +130,18 @@ func (bb *BBPakMatcher) FindPhysicalPackages() {
 	}
 }
 
+func (bb *BBPakMatcher) Format(fmtype string) {
+	var formatter bbpak_formatters.BBPakFormatter
+	switch fmtype {
+	case "csv":
+		formatter = bbpak_formatters.NewBBPakCSVFormat()
+	default:
+		formatter = bbpak_formatters.NewBBPakTextFormat()
+	}
+	formatter.SetPackages(bb.pkgs)
+	fmt.Println(formatter.Format())
+}
+
 func (bb *BBPakMatcher) FindManifests() {
 	deployed := path.Join(bb.root, "build", "tmp", "deploy")
 	err := filepath.Walk(deployed, bb.findManifest)
@@ -136,5 +153,6 @@ func (bb *BBPakMatcher) FindManifests() {
 		bb.ParseManifestPackages()
 		bb.FindPhysicalPackages()
 
+		bb.Format("")
 	}
 }
