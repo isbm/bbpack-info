@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
-	github.com/isbm/go-deb v0.0.0-20200605213903-9ba7f915a2a8
+	github.com/isbm/go-deb v0.0.0-20200606113352-45f79b074aa5
 	github.com/urfave/cli/v2 v2.2.0
 )
 
