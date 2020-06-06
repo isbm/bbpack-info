@@ -109,7 +109,7 @@ func (bb *BBPakMatcher) FindPhysicalPackages() {
 	for _, pkg := range bb.pkgs {
 		found := false
 		for _, pth := range bb.pkgPaths {
-			if strings.HasPrefix(path.Base(pth), pkg.name) && strings.Contains(pth, bb.prepareVersion(pkg.version)) {
+			if strings.HasPrefix(path.Base(pth), pkg.name+"_") && strings.Contains(pth, bb.prepareVersion(pkg.version)) {
 				p, err := deb.OpenPackageFile(pth, false)
 				if err != nil {
 					fmt.Println("Error opening package:", err.Error())
