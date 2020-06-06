@@ -7,8 +7,8 @@ type BBPakJSONFormat struct {
 	BBPakFormatterUtils
 }
 
-func NewBBPakJSONFormat() *BBPakCSVFormat {
-	bbp := new(BBPakCSVFormat)
+func NewBBPakJSONFormat() *BBPakJSONFormat {
+	bbp := new(BBPakJSONFormat)
 	bbp.packages = make(map[string]*bbpak_paktype.PackageMeta)
 
 	return bbp
