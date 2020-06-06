@@ -18,7 +18,7 @@ func NewBBPakMarkdownFormat() *BBPakMarkdownFormat {
 
 // Format the output to the Markdown table (useful for GitHub/-Lab Wikis)
 func (bbp *BBPakMarkdownFormat) Format() string {
-	return ""
+	return "markdown is not yet implemented"
 }
 
 // SetPackages has been already collected and ready to format the output

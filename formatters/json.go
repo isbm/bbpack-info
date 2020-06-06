@@ -16,7 +16,7 @@ func NewBBPakJSONFormat() *BBPakJSONFormat {
 
 // Format the output to the JSON format (useful for integrations)
 func (bbp *BBPakJSONFormat) Format() string {
-	return ""
+	return "json is not yet implemented"
 }
 
 // SetPackages has been already collected and ready to format the output

@@ -18,7 +18,7 @@ func NewBBPakCSVFormat() *BBPakCSVFormat {
 
 // Format the output to the CSV format (useful for managers :-) )
 func (bbp *BBPakCSVFormat) Format() string {
-	return ""
+	return "csv is not yet implemented"
 }
 
 // SetPackages has been already collected and ready to format the output
