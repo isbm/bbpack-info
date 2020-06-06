@@ -3,6 +3,8 @@ package bbpak_formatters
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"os"
 
 	bbpak_paktype "github.com/isbm/bbpack-info/paktype"
 )
@@ -27,6 +29,27 @@ func (bbp *BBPakJSONFormat) Format() string {
 		pkgInfo := make(map[string]interface{})
 		pkgInfo["license"] = pkg.GetPackage().ControlFile().Licence()
 		pkgInfo["version"] = pkg.GetPackage().ControlFile().Version()
+		pkgInfo["depends"] = pkg.GetPackage().ControlFile().Depends()
+		pkgInfo["description"] = pkg.GetPackage().ControlFile().Description()
+		pkgInfo["summary"] = pkg.GetPackage().ControlFile().Summary()
+
+		provides := pkg.GetPackage().ControlFile().Provides()
+		if provides != nil {
+			pkgInfo["provides"] = provides
+		}
+
+		pkgInfo["maintainer"] = pkg.GetPackage().ControlFile().Maintainer()
+		pkgInfo["pkg-size"] = bbp.ByteIEC(pkg.GetPackage().FileSize())
+
+		pkgInfo["arch"] = pkg.GetPackage().ControlFile().Architecture()
+		pkgInfo["multi-arch"] = pkg.GetPackage().ControlFile().MultiArch()
+
+		pkgChecksum := make(map[string]string)
+		pkgChecksum["md5"] = pkg.GetPackage().GetPackageChecksum().MD5()
+		pkgChecksum["sha1"] = pkg.GetPackage().GetPackageChecksum().SHA1()
+		pkgChecksum["sha256"] = pkg.GetPackage().GetPackageChecksum().SHA256()
+		pkgInfo["checksum"] = pkgChecksum
+
 		out[pkgName] = pkgInfo
 	}
 
