@@ -10,7 +10,6 @@ import (
 )
 
 type BBPakJSONFormat struct {
-	packages map[string]*bbpak_paktype.PackageMeta
 	BBPakFormatterUtils
 }
 
@@ -65,9 +64,4 @@ func (bbp *BBPakJSONFormat) Format() string {
 	}
 
 	return formatted.String()
-}
-
-// SetPackages has been already collected and ready to format the output
-func (bbp *BBPakJSONFormat) SetPackages(packages map[string]*bbpak_paktype.PackageMeta) {
-	bbp.packages = packages
 }

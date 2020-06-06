@@ -5,7 +5,6 @@ import (
 )
 
 type BBPakMarkdownFormat struct {
-	packages map[string]*bbpak_paktype.PackageMeta
 	BBPakFormatterUtils
 }
 
@@ -19,9 +18,4 @@ func NewBBPakMarkdownFormat() *BBPakMarkdownFormat {
 // Format the output to the Markdown table (useful for GitHub/-Lab Wikis)
 func (bbp *BBPakMarkdownFormat) Format() string {
 	return "markdown is not yet implemented"
-}
-
-// SetPackages has been already collected and ready to format the output
-func (bbp *BBPakMarkdownFormat) SetPackages(packages map[string]*bbpak_paktype.PackageMeta) {
-	bbp.packages = packages
 }

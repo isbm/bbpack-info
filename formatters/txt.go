@@ -9,8 +9,6 @@ import (
 )
 
 type BBPakTextFormat struct {
-	packages     map[string]*bbpak_paktype.PackageMeta
-	pkgNameIndex []string
 	BBPakFormatterUtils
 }
 
@@ -19,16 +17,6 @@ func NewBBPakTextFormat() *BBPakTextFormat {
 	bbp.packages = make(map[string]*bbpak_paktype.PackageMeta)
 
 	return bbp
-}
-
-func (bbp *BBPakTextFormat) genIndex() {
-	if bbp.pkgNameIndex == nil {
-		bbp.pkgNameIndex = make([]string, 0)
-		for pkName := range bbp.packages {
-			bbp.pkgNameIndex = append(bbp.pkgNameIndex, pkName)
-		}
-		sort.Strings(bbp.pkgNameIndex)
-	}
 }
 
 // Format the output to the ASCII text (for CLI for example)
@@ -72,11 +60,4 @@ func (bbp *BBPakTextFormat) Format() string {
 	}
 
 	return out.String()
-}
-
-// SetPackages has been already collected and ready to format the output
-func (bbp *BBPakTextFormat) SetPackages(packages map[string]*bbpak_paktype.PackageMeta) {
-	bbp.packages = packages
-	bbp.pkgNameIndex = nil
-	bbp.genIndex()
 }
