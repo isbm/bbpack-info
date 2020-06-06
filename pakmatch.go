@@ -131,6 +131,7 @@ func (bb *BBPakMatcher) FindPhysicalPackages() {
 		for i, p := range missing {
 			fmt.Println(i+1, p)
 		}
+		panic("Some packages has been missing!")
 	}
 }
 
