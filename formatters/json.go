@@ -36,7 +36,10 @@ func (bbp *BBPakJSONFormat) Format() string {
 		os.Exit(1)
 	}
 	var formatted bytes.Buffer
-	json.Indent(&formatted, jsonData, "", "\t")
+	if err := json.Indent(&formatted, jsonData, "", "  "); err != nil {
+		fmt.Println("Error:", err.Error())
+		os.Exit(1)
+	}
 
 	return formatted.String()
 }
