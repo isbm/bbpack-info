@@ -1,7 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"path"
+	"sort"
+	"strings"
 
 	bbpak "github.com/isbm/bbpack-info"
 
@@ -12,7 +16,42 @@ func app(ctx *cli.Context) error {
 	m := bbpak.NewBBPakMatcher(ctx.String("path"))
 
 	if ctx.Bool("list") {
-		m.FindManifests()
+		manifests, err := m.FindManifests()
+		if err != nil {
+			sort.Strings(manifests)
+			fmt.Println("Available manifests:")
+			for idx, mfs := range manifests {
+				fmt.Printf("  %d. %s\n", idx+1, strings.Split(path.Base(mfs), ".")[0])
+			}
+		} else {
+			fmt.Printf("Error: %s", err.Error())
+			os.Exit(1)
+		}
+	} else {
+		if ctx.String("manifest") == "" {
+			fmt.Println("Error: no manifest has been specified.")
+			os.Exit(1)
+		}
+		format := ""
+		for _, fmt := range []string{"txt", "csv", "md", "json"} {
+			if ctx.String("format") == fmt {
+				format = fmt
+				break
+			}
+		}
+		if format == "" {
+			fmt.Printf("Error: format %s not supported\n", ctx.String("format"))
+			os.Exit(1)
+		}
+		m.SetTargetManifest(ctx.String("manifest"))
+		_, err := m.FindManifests()
+		if err != nil {
+			fmt.Printf("Error: %s\n", err.Error())
+			os.Exit(1)
+		}
+		m.ParseManifestPackages()
+		m.FindPhysicalPackages()
+		m.Format(format)
 	}
 
 	return nil

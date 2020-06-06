@@ -16,10 +16,12 @@ import (
 
 // BBPakMatcher class
 type BBPakMatcher struct {
-	root     string
-	manifest string
-	pkgs     map[string]*bbpak_paktype.PackageMeta
-	pkgPaths []string
+	root           string
+	manifestTarget string
+	manifest       string // The Chosen One TM
+	manifests      []string
+	pkgs           map[string]*bbpak_paktype.PackageMeta
+	pkgPaths       []string
 }
 
 // Costructor
@@ -28,6 +30,7 @@ func NewBBPakMatcher(path string) *BBPakMatcher {
 	bb.root = path
 	bb.pkgs = make(map[string]*bbpak_paktype.PackageMeta)
 	bb.pkgPaths = make([]string, 0)
+	bb.manifests = make([]string, 0)
 	return bb
 }
 
@@ -87,7 +90,10 @@ func (bb *BBPakMatcher) findManifest(pth string, info os.FileInfo, err error) er
 		return err
 	}
 	if strings.HasSuffix(pth, ".rootfs.opkg.status") {
-		bb.manifest = pth
+		if strings.Contains(pth, bb.manifestTarget) && bb.manifest == "" {
+			bb.manifest = pth
+		}
+		bb.manifests = append(bb.manifests, pth)
 	} else if strings.HasSuffix(pth, ".ipk") {
 		bb.pkgPaths = append(bb.pkgPaths, pth)
 	}
@@ -142,17 +148,16 @@ func (bb *BBPakMatcher) Format(fmtype string) {
 	fmt.Println(formatter.Format())
 }
 
-func (bb *BBPakMatcher) FindManifests() {
+// SetTargetManifest sets a manifest search criteria that will eventually turn it into a full path, if found.
+func (bb *BBPakMatcher) SetTargetManifest(target string) {
+	bb.manifestTarget = target
+}
+
+func (bb *BBPakMatcher) FindManifests() ([]string, error) {
 	deployed := path.Join(bb.root, "build", "tmp", "deploy")
 	err := filepath.Walk(deployed, bb.findManifest)
-	if err != nil && bb.manifest == "" {
-		fmt.Println(">>>", err)
-	} else {
-		fmt.Println("Manifest:", bb.manifest)
-
-		bb.ParseManifestPackages()
-		bb.FindPhysicalPackages()
-
-		bb.Format("")
+	if err == nil && bb.manifest == "" {
+		err = fmt.Errorf("No manifest has been found")
 	}
+	return bb.manifests, err
 }
