@@ -95,12 +95,21 @@ func main() {
 				Aliases: []string{"f"},
 				Name:    "format",
 				Usage:   "Output in: csv, md, json, txt",
-				Value:   "txt",
 			},
 			&cli.BoolFlag{
 				Aliases: []string{"l"},
 				Name:    "list",
 				Usage:   "List available manifests",
+			},
+			&cli.StringFlag{
+				Aliases: []string{"g"},
+				Name:    "package",
+				Usage:   "Display package information",
+			},
+			&cli.StringFlag{
+				Aliases: []string{"t"},
+				Name:    "patch",
+				Usage:   "Display package patch info (requires package name)",
 			},
 		},
 	}
