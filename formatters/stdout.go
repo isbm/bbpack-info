@@ -127,11 +127,17 @@ func (bbp *BBPakSTDOUTFormat) formatDepsMap(p *bbpak_paktype.PackageMeta) string
 	depends := p.GetPackage().ControlFile().Depends()
 	conflicts := p.GetPackage().ControlFile().Conflicts()
 
+	pdcSet := false
 	for _, row := range bbp.toGrid(provides, depends, conflicts) {
 		table.AddRow(row...)
+		pdcSet = true
 	}
 
-	out.WriteString(bbp.toTable(table, false))
+	if pdcSet {
+		out.WriteString(bbp.toTable(table, false))
+	} else {
+		out.WriteString("This package provides nothing, depends on nothing and has no conflicts.")
+	}
 	return out.String()
 }
 
