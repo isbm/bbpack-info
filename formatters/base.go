@@ -22,6 +22,11 @@ func (bbp *BBPakFormatterUtils) genIndex() {
 	}
 }
 
+// IsSummary of all packages (true) or not
+func (bbp *BBPakFormatterUtils) IsSummary() bool {
+	return len(bbp.packages) != 1
+}
+
 func (bbp *BBPakFormatterUtils) ByteIEC(b uint64) string {
 	const unit = 0x400
 	if b < unit {
