@@ -107,6 +107,26 @@ func (bb *BBPakMatcher) prepareVersion(ver string) string {
 	return ver
 }
 
+// FindRequestedPackage finds the requested package
+func (bb *BBPakMatcher) FindRequestedPackage(pkgname string) {
+	for _, pkg := range bb.pkgs {
+		if pkg.Name() == pkgname {
+			for _, pth := range bb.pkgPaths {
+				if strings.HasPrefix(path.Base(pth), pkg.Name()+"_") && strings.Contains(pth, bb.prepareVersion(pkg.Version())) {
+					p, err := deb.OpenPackageFile(pth, false)
+					if err != nil {
+						fmt.Println("Error opening package:", err.Error())
+					}
+					pkg.SetPackageFile(p)
+					bb.pkgs = make(map[string]*bbpak_paktype.PackageMeta)
+					bb.pkgs[pkg.Name()] = pkg
+					return
+				}
+			}
+		}
+	}
+}
+
 func (bb *BBPakMatcher) FindPhysicalPackages() {
 	// This is terrible
 	missing := make([]string, 0)
