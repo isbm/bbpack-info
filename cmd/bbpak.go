@@ -15,6 +15,21 @@ import (
 func app(ctx *cli.Context) error {
 	m := bbpak.NewBBPakMatcher(ctx.String("path"))
 
+	format := ""
+	for _, fmt := range []string{"txt", "csv", "md", "json", ""} {
+		if ctx.String("format") == fmt {
+			if fmt == "" {
+				fmt = "stdout"
+			}
+			format = fmt
+			break
+		}
+	}
+	if format == "" {
+		fmt.Printf("Error: format %s not supported\n", ctx.String("format"))
+		os.Exit(1)
+	}
+
 	if ctx.Bool("list") {
 		manifests, err := m.FindManifests()
 		if err != nil {
@@ -28,30 +43,27 @@ func app(ctx *cli.Context) error {
 			os.Exit(1)
 		}
 	} else {
+		// Get manifest
 		if ctx.String("manifest") == "" {
 			fmt.Println("Error: no manifest has been specified.")
 			os.Exit(1)
-		}
-		format := ""
-		for _, fmt := range []string{"txt", "csv", "md", "json"} {
-			if ctx.String("format") == fmt {
-				format = fmt
-				break
+		} else {
+			m.SetTargetManifest(ctx.String("manifest"))
+			_, err := m.FindManifests()
+			if err != nil {
+				fmt.Printf("Error: %s\n", err.Error())
+				os.Exit(1)
 			}
 		}
-		if format == "" {
-			fmt.Printf("Error: format %s not supported\n", ctx.String("format"))
-			os.Exit(1)
-		}
-		m.SetTargetManifest(ctx.String("manifest"))
-		_, err := m.FindManifests()
-		if err != nil {
-			fmt.Printf("Error: %s\n", err.Error())
-			os.Exit(1)
-		}
 		m.ParseManifestPackages()
-		m.FindPhysicalPackages()
-		m.Format(format)
+
+		if ctx.String("package") != "" {
+			m.FindRequestedPackage(ctx.String("package"))
+			m.Format(format)
+		} else {
+			m.FindPhysicalPackages()
+			m.Format(format)
+		}
 	}
 
 	return nil
@@ -80,12 +92,21 @@ func main() {
 				Aliases: []string{"f"},
 				Name:    "format",
 				Usage:   "Output in: csv, md, json, txt",
-				Value:   "txt",
 			},
 			&cli.BoolFlag{
 				Aliases: []string{"l"},
 				Name:    "list",
 				Usage:   "List available manifests",
+			},
+			&cli.StringFlag{
+				Aliases: []string{"g"},
+				Name:    "package",
+				Usage:   "Display package information",
+			},
+			&cli.StringFlag{
+				Aliases: []string{"t"},
+				Name:    "patch",
+				Usage:   "Display package patch info (requires package name)",
 			},
 		},
 	}
