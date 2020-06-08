@@ -58,7 +58,6 @@ func app(ctx *cli.Context) error {
 		m.ParseManifestPackages()
 
 		if ctx.String("package") != "" {
-			fmt.Println("Package info", ctx.String("package"))
 			m.FindRequestedPackage(ctx.String("package"))
 			m.Format(format)
 		} else {
