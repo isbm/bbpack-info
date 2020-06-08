@@ -43,30 +43,28 @@ func app(ctx *cli.Context) error {
 			os.Exit(1)
 		}
 	} else {
+		// Get manifest
 		if ctx.String("manifest") == "" {
 			fmt.Println("Error: no manifest has been specified.")
 			os.Exit(1)
-		}
-		format := ""
-		for _, fmt := range []string{"txt", "csv", "md", "json"} {
-			if ctx.String("format") == fmt {
-				format = fmt
-				break
+		} else {
+			m.SetTargetManifest(ctx.String("manifest"))
+			_, err := m.FindManifests()
+			if err != nil {
+				fmt.Printf("Error: %s\n", err.Error())
+				os.Exit(1)
 			}
 		}
-		if format == "" {
-			fmt.Printf("Error: format %s not supported\n", ctx.String("format"))
-			os.Exit(1)
-		}
-		m.SetTargetManifest(ctx.String("manifest"))
-		_, err := m.FindManifests()
-		if err != nil {
-			fmt.Printf("Error: %s\n", err.Error())
-			os.Exit(1)
-		}
 		m.ParseManifestPackages()
-		m.FindPhysicalPackages()
-		m.Format(format)
+
+		if ctx.String("package") != "" {
+			fmt.Println("Package info", ctx.String("package"))
+			m.FindRequestedPackage(ctx.String("package"))
+			m.Format(format)
+		} else {
+			m.FindPhysicalPackages()
+			m.Format(format)
+		}
 	}
 
 	return nil
