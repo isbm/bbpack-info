@@ -145,8 +145,10 @@ func (bb *BBPakMatcher) Format(fmtype string) {
 		formatter = bbpak_formatters.NewBBPakJSONFormat()
 	case "md":
 		formatter = bbpak_formatters.NewBBPakMarkdownFormat()
-	default:
+	case "txt":
 		formatter = bbpak_formatters.NewBBPakTextFormat()
+	default:
+		formatter = bbpak_formatters.NewBBPakSTDOUTFormat()
 	}
 	formatter.SetPackages(bb.pkgs)
 	fmt.Println(formatter.Format())
