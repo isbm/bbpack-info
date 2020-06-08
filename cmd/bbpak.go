@@ -15,6 +15,21 @@ import (
 func app(ctx *cli.Context) error {
 	m := bbpak.NewBBPakMatcher(ctx.String("path"))
 
+	format := ""
+	for _, fmt := range []string{"txt", "csv", "md", "json", ""} {
+		if ctx.String("format") == fmt {
+			if fmt == "" {
+				fmt = "stdout"
+			}
+			format = fmt
+			break
+		}
+	}
+	if format == "" {
+		fmt.Printf("Error: format %s not supported\n", ctx.String("format"))
+		os.Exit(1)
+	}
+
 	if ctx.Bool("list") {
 		manifests, err := m.FindManifests()
 		if err != nil {
