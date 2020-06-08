@@ -60,8 +60,8 @@ func (bbp *BBPakSTDOUTFormat) toTable(data *asciitable.TableData, firstColRight 
 	} else {
 		align = asciitable.ALIGN_LEFT
 	}
-	return asciitable.NewSimpleTable(data, style).SetCellPadding(1).SetTextWrap(true).
-		SetColAlign(align, 0).SetColTextWrap(false, 0).Render()
+	return asciitable.NewSimpleTable(data, style).SetCellPadding(1).SetTextWrap(false).
+		SetColAlign(align, 0).Render()
 }
 
 func (bbp *BBPakSTDOUTFormat) formatPackageSummary(p *bbpak_paktype.PackageMeta) string {
@@ -75,7 +75,7 @@ func (bbp *BBPakSTDOUTFormat) formatPackageSummary(p *bbpak_paktype.PackageMeta)
 
 	bbp.AddInfo(table, "Package", aurora.White(p.GetPackage().ControlFile().Package()).String())
 	bbp.AddInfo(table, "Summary", p.GetPackage().ControlFile().Summary())
-	bbp.AddInfo(table, "Description", p.GetPackage().ControlFile().Description())
+	//bbp.AddInfo(table, "Description", p.GetPackage().ControlFile().Description())
 	bbp.AddInfo(table, "Licence", bbp.licenseColor(p.GetPackage().ControlFile().Licence()))
 	bbp.AddInfo(table, "Version", p.GetPackage().ControlFile().Version())
 	bbp.AddInfo(table, "Priority", p.GetPackage().ControlFile().Priority())
