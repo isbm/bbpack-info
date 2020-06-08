@@ -25,10 +25,14 @@ func NewBBPakSTDOUTFormat() *BBPakSTDOUTFormat {
 
 // Format the output to the ASCII text (for CLI for example)
 func (bbp *BBPakSTDOUTFormat) Format() string {
-	if bbp.IsSummary() {
-		return bbp.formatSummary()
+	if len(bbp.packages) < 1 {
+		return "Seems these packages were never deployed."
 	} else {
-		return bbp.formatDetails()
+		if bbp.IsSummary() {
+			return bbp.formatSummary()
+		} else {
+			return bbp.formatDetails()
+		}
 	}
 }
 

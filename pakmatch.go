@@ -125,6 +125,8 @@ func (bb *BBPakMatcher) FindRequestedPackage(pkgname string) {
 			}
 		}
 	}
+	// Reset the references: no packages found (they are probably removed dependencies in the work dir)
+	bb.pkgs = make(map[string]*bbpak_paktype.PackageMeta)
 }
 
 func (bb *BBPakMatcher) FindPhysicalPackages() {
