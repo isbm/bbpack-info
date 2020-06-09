@@ -106,7 +106,7 @@ func main() {
 				Name:    "package",
 				Usage:   "Display package information",
 			},
-			&cli.BoolFlag{
+			&cli.StringFlag{
 				Aliases: []string{"a"},
 				Name:    "patches",
 				Usage:   "List all patches on that package (requires package name)",
