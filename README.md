@@ -46,4 +46,4 @@ Enjoy.
 
 ## Contribution
 
-Sure. Your PR is always welcome.
+Ther fastest way to fix a bug or implement a `$FEATURE` of the day -- all is possible through your PRs: those are always welcome. Happy hacking.
