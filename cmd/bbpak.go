@@ -32,7 +32,7 @@ func app(ctx *cli.Context) error {
 
 	if ctx.Bool("list") {
 		manifests, err := m.FindManifests()
-		if err != nil {
+		if err == nil {
 			sort.Strings(manifests)
 			fmt.Println("Available manifests:")
 			for idx, mfs := range manifests {
