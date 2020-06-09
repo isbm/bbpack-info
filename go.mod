@@ -3,6 +3,7 @@ module github.com/isbm/bbpack-info
 go 1.14
 
 require (
+	github.com/bluekeyes/go-gitdiff v0.3.0
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/google/go-cmp v0.4.1 // indirect
 	github.com/isbm/go-asciitable v0.0.1
