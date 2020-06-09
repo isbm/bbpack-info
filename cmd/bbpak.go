@@ -60,6 +60,9 @@ func app(ctx *cli.Context) error {
 		if ctx.String("package") != "" {
 			m.FindRequestedPackage(ctx.String("package"))
 			m.Format(format)
+		} else if ctx.String("patches") != "" {
+			m.FindRelatedPatches(ctx.String("package"))
+			//m.Format(format)
 		} else {
 			m.FindPhysicalPackages()
 			m.Format(format)
@@ -83,6 +86,11 @@ func main() {
 				Usage:    "Path to the build",
 				Required: true,
 			},
+			&cli.BoolFlag{
+				Aliases: []string{"l"},
+				Name:    "list",
+				Usage:   "List available manifests",
+			},
 			&cli.StringFlag{
 				Aliases: []string{"m"},
 				Name:    "manifest",
@@ -93,15 +101,15 @@ func main() {
 				Name:    "format",
 				Usage:   "Output in: csv, md, json, txt",
 			},
-			&cli.BoolFlag{
-				Aliases: []string{"l"},
-				Name:    "list",
-				Usage:   "List available manifests",
-			},
 			&cli.StringFlag{
 				Aliases: []string{"g"},
 				Name:    "package",
 				Usage:   "Display package information",
+			},
+			&cli.BoolFlag{
+				Aliases: []string{"a"},
+				Name:    "patches",
+				Usage:   "List all patches on that package (requires package name)",
 			},
 			&cli.StringFlag{
 				Aliases: []string{"t"},
