@@ -58,11 +58,14 @@ func app(ctx *cli.Context) error {
 		m.ParseManifestPackages()
 
 		if ctx.String("package") != "" {
-			m.FindRequestedPackage(ctx.String("package"))
-			m.Format(format)
-		} else if ctx.String("patches") != "" {
-			m.FindRelatedPatches(ctx.String("package"))
-			//m.Format(format)
+			if ctx.String("patch") != "" {
+				m.FindSpecificPatch(ctx.String("patch"))
+			} else if ctx.Bool("patches") {
+				m.FindRelatedPatches(ctx.String("package"))
+			} else {
+				m.FindRequestedPackage(ctx.String("package"))
+				m.Format(format)
+			}
 		} else {
 			m.FindPhysicalPackages()
 			m.Format(format)
@@ -106,7 +109,7 @@ func main() {
 				Name:    "package",
 				Usage:   "Display package information",
 			},
-			&cli.StringFlag{
+			&cli.BoolFlag{
 				Aliases: []string{"a"},
 				Name:    "patches",
 				Usage:   "List all patches on that package (requires package name)",
