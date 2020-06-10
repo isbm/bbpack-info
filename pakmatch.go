@@ -22,6 +22,7 @@ type BBPakMatcher struct {
 	manifests      []string
 	pkgs           map[string]*bbpak_paktype.PackageMeta
 	pkgPaths       []string
+	patch          *bbpak_paktype.BBPakPatch
 }
 
 // Costructor
@@ -107,8 +108,31 @@ func (bb *BBPakMatcher) prepareVersion(ver string) string {
 	return ver
 }
 
+// FindSpecificPatch by filename (no path inclusion).
+// This function finds a specific patch that is a part of the package.
+func (bb *BBPakMatcher) FindSpecificPatch(patchname string) error {
+	bb.patch = bbpak_paktype.NewBBPakPatch()
+	if err := bb.patch.LoadPatch(patchname); err != nil {
+		bb.patch = nil
+		return err
+	}
+	return nil
+}
+
+// FindRelatedPatches returns a list of patches per a package
+func (bb *BBPakMatcher) FindRelatedPatches(pkgname string) error {
+	pkg := bb.FindRequestedPackage(pkgname)
+	if pkg == nil {
+		return fmt.Errorf("No package by name %s has been found.", pkgname)
+	}
+	fmt.Printf("Patches for %s (sorted alphabetically)\n", pkg.GetPackage().ControlFile().Package())
+	NewBBPakPatchesTracker(bb.root, pkg.GetPackage().ControlFile().Package()).GetAllPatches()
+
+	return nil
+}
+
 // FindRequestedPackage finds the requested package
-func (bb *BBPakMatcher) FindRequestedPackage(pkgname string) {
+func (bb *BBPakMatcher) FindRequestedPackage(pkgname string) *bbpak_paktype.PackageMeta {
 	for _, pkg := range bb.pkgs {
 		if pkg.Name() == pkgname {
 			for _, pth := range bb.pkgPaths {
@@ -120,13 +144,14 @@ func (bb *BBPakMatcher) FindRequestedPackage(pkgname string) {
 					pkg.SetPackageFile(p)
 					bb.pkgs = make(map[string]*bbpak_paktype.PackageMeta)
 					bb.pkgs[pkg.Name()] = pkg
-					return
+					return pkg
 				}
 			}
 		}
 	}
 	// Reset the references: no packages found (they are probably removed dependencies in the work dir)
 	bb.pkgs = make(map[string]*bbpak_paktype.PackageMeta)
+	return nil
 }
 
 func (bb *BBPakMatcher) FindPhysicalPackages() {
