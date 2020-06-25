@@ -59,7 +59,7 @@ func app(ctx *cli.Context) error {
 
 		if ctx.String("package") != "" {
 			if ctx.String("patch") != "" {
-				m.FindSpecificPatch(ctx.String("patch"))
+				m.FindSpecificPatch(ctx.String("package"), ctx.String("patch"))
 			} else if ctx.Bool("patches") {
 				m.FindRelatedPatches(ctx.String("package"))
 			} else {

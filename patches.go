@@ -2,7 +2,6 @@ package bbpak
 
 import (
 	"fmt"
-	"os"
 	"path"
 	"sort"
 	"strings"
@@ -17,10 +16,12 @@ import (
 */
 
 type BBPakPatchesTracker struct {
-	pkgName    string
-	root       string
-	allPatches map[string]interface{}
-	mu         *sync.Mutex
+	pkgName          string
+	root             string
+	allPatches       map[string]interface{}
+	appliedPatches   map[string]string
+	applyPatchLogPth string
+	mu               *sync.Mutex
 }
 
 func NewBBPakPatchesTracker(root string, pkgName string) *BBPakPatchesTracker {
@@ -28,6 +29,8 @@ func NewBBPakPatchesTracker(root string, pkgName string) *BBPakPatchesTracker {
 	bbpt.root = ResolveIfSymlink(root)
 	bbpt.pkgName = pkgName
 	bbpt.allPatches = make(map[string]interface{})
+	bbpt.appliedPatches = make(map[string]string)
+
 	bbpt.mu = new(sync.Mutex)
 	return bbpt
 }
@@ -44,18 +47,16 @@ func (bbpt *BBPakPatchesTracker) filterSourcePatch(pth string, info *godirwalk.D
 }
 
 // Patches that are actually applied
-func (bbpt *BBPakPatchesTracker) filterDeployedPatch(pth string, info os.FileInfo, err error) error {
-	if !strings.Contains(pth, "build/tmp/") {
-		return fmt.Errorf(pth)
-	}
-	if strings.Contains(pth, "/"+bbpt.pkgName+"/") && strings.HasSuffix(pth, ".patch") {
-
+func (bbpt *BBPakPatchesTracker) filterDeployedPatch(pth string, info *godirwalk.Dirent) error {
+	if strings.Contains(pth, "/"+bbpt.pkgName+"/") && strings.HasSuffix(pth, ".patch") && strings.Contains(pth, "/tmp/work/") {
+		bbpt.appliedPatches[path.Base(pth)] = "" // Then resolve paths and ordering by do_patch log
 	}
 	return nil
 }
 
 // GetAllPatches which are defined to the package (not the fact they are actually applied).
-func (bbpt *BBPakPatchesTracker) GetAllPatches() {
+func (bbpt *BBPakPatchesTracker) GetAllPatches() []string {
+	patches := make([]string, 0)
 	err := godirwalk.Walk(bbpt.root, &godirwalk.Options{
 		Unsorted: true,
 		Callback: bbpt.filterSourcePatch,
@@ -65,21 +66,36 @@ func (bbpt *BBPakPatchesTracker) GetAllPatches() {
 	})
 	if err != nil {
 		fmt.Println("Error getting all patches:", err.Error())
-		return
+		return patches
 	}
 
-	patches := make([]string, 0)
 	for p := range bbpt.allPatches {
 		patches = append(patches, p)
 	}
 	sort.Strings(patches)
-	for idx, p := range patches {
-		fmt.Println(idx+1, p)
-	}
+	return patches
 }
 
 // GetAppliedPatches which are actually are used in the given patch and compiled with.
-func (bbpt *BBPakPatchesTracker) GetAppliedPatches() {
+func (bbpt *BBPakPatchesTracker) GetAppliedPatches() []string {
+	patches := make([]string, 0)
+	err := godirwalk.Walk(path.Join(bbpt.root, "build", "tmp", "work"), &godirwalk.Options{
+		Unsorted: true,
+		Callback: bbpt.filterDeployedPatch,
+		ErrorCallback: func(pth string, err error) godirwalk.ErrorAction {
+			return godirwalk.SkipNode
+		},
+	})
+	if err != nil {
+		fmt.Println("Error getting all patches:", err.Error())
+		return patches
+	}
+
+	for p := range bbpt.appliedPatches {
+		patches = append(patches, p)
+	}
+	sort.Strings(patches)
+	return patches
 }
 
 // BuildChangelog to the package.

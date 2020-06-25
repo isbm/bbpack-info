@@ -110,7 +110,12 @@ func (bb *BBPakMatcher) prepareVersion(ver string) string {
 
 // FindSpecificPatch by filename (no path inclusion).
 // This function finds a specific patch that is a part of the package.
-func (bb *BBPakMatcher) FindSpecificPatch(patchname string) error {
+func (bb *BBPakMatcher) FindSpecificPatch(pkgname string, patchname string) error {
+	pkg := bb.FindRequestedPackage(pkgname)
+	if pkg == nil {
+		return fmt.Errorf("No package by name %s has been found.", pkgname)
+	}
+	NewBBPakPatchesTracker(bb.root, pkg.GetPackage().ControlFile().Package())
 	bb.patch = bbpak_paktype.NewBBPakPatch()
 	if err := bb.patch.LoadPatch(patchname); err != nil {
 		bb.patch = nil
@@ -125,8 +130,19 @@ func (bb *BBPakMatcher) FindRelatedPatches(pkgname string) error {
 	if pkg == nil {
 		return fmt.Errorf("No package by name %s has been found.", pkgname)
 	}
+	tracker := NewBBPakPatchesTracker(bb.root, pkg.GetPackage().ControlFile().Package())
+
 	fmt.Printf("Patches for %s (sorted alphabetically)\n", pkg.GetPackage().ControlFile().Package())
-	NewBBPakPatchesTracker(bb.root, pkg.GetPackage().ControlFile().Package()).GetAllPatches()
+	allPatches := tracker.GetAllPatches()
+	for idx, p := range allPatches {
+		fmt.Printf("%3d. %s\n", idx+1, p)
+	}
+
+	fmt.Printf("Applied patches %s (sorted alphabetically)\n", pkg.GetPackage().ControlFile().Package())
+	appliedPatches := tracker.GetAppliedPatches()
+	for idx, p := range appliedPatches {
+		fmt.Printf("%3d. %s\n", idx+1, p)
+	}
 
 	return nil
 }
