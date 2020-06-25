@@ -13,5 +13,3 @@ require (
 	github.com/urfave/cli/v2 v2.2.0
 	gotest.tools v2.2.0+incompatible // indirect
 )
-
-replace github.com/isbm/go-deb => /home/bo/work/go-deb
