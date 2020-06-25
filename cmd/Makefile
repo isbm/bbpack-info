@@ -1,14 +1,7 @@
 OUT := bbpak
 DISTRO := $(shell cat /etc/os-release | grep '^NAME=' | sed -e 's/.*=//')
-GCCGO :=
-GO :=
-ifeq ($(DISTRO),"Ubuntu")
-	GCCGO += gccgo
-	GO += go
-else ifeq (($DISTRO),"openSUSE Leap")
-	GCCGO += gccgo-8
-	GO += go-8
-endif
+GCCGO := gccgo
+GO := go
 
 SOURCES = \
 	*.go
