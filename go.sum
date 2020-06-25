@@ -5,6 +5,8 @@ github.com/blakesmith/ar v0.0.0-20190502131153-809d4375e1fb h1:m935MPodAbYS46DG4
 github.com/blakesmith/ar v0.0.0-20190502131153-809d4375e1fb/go.mod h1:PkYb9DJNAwrSvRx5DYA+gUcOIgTGVMNkfSCbZM8cWpI=
 github.com/bluekeyes/go-gitdiff v0.3.0 h1:j+SG1Fv3lI5/pxNxgo3hNbpDZb/DGzdEgL0wxVltHRk=
 github.com/bluekeyes/go-gitdiff v0.3.0/go.mod h1:QpfYYO1E0fTVHVZAZKiRjtSGY9823iCdvGXBcEzHGbM=
+github.com/bluekeyes/go-gitdiff v0.4.0 h1:Q3qUnQ5cv27vG6ywUTiSQUobRYRcQIBs8KVGKojLg9I=
+github.com/bluekeyes/go-gitdiff v0.4.0/go.mod h1:QpfYYO1E0fTVHVZAZKiRjtSGY9823iCdvGXBcEzHGbM=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d h1:U+s90UTSYgptZMwQh2aRr3LuazLJIa+Pg3Kc1ylSYVY=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0 h1:EoUDS0afbrsXAZ9YQ9jdu/mZ2sXgT1/2yyNng4PGlyM=
@@ -14,6 +16,8 @@ github.com/google/go-cmp v0.4.1 h1:/exdXoGamhu5ONeUJH0deniYLWYvQwW66yvlfiiKTu0=
 github.com/google/go-cmp v0.4.1/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/isbm/go-asciitable v0.0.1 h1:UTpSX1K36PCTzvc33Z8vmrfyQTM6giwQbV+FgyIF9Ps=
 github.com/isbm/go-asciitable v0.0.1/go.mod h1:2xeM8zs2oT1By68lOcYow2iwYyVwvZkbOOSyU607Orw=
+github.com/isbm/go-deb v0.0.0-20200606113352-45f79b074aa5 h1:Wp4mYQeoWsWDFN64Art77ontGlQB5MGmceJ0Fp4Aqwc=
+github.com/isbm/go-deb v0.0.0-20200606113352-45f79b074aa5/go.mod h1:0ADnL+l3n3ZKn2Enq5hFJnklmTGVL16m3IgVf1CrJtU=
 github.com/isbm/textwrap v0.0.0-20190729202254-22edad10bd84 h1:scHwVk4GXp/7zEXLxK3cp6mNnYO9rnh95D7hLlptjdM=
 github.com/isbm/textwrap v0.0.0-20190729202254-22edad10bd84/go.mod h1:+PDhg1ZFq4tFBnroujXJrpPToQBC7BoN260sgTo/9W0=
 github.com/karrick/godirwalk v1.15.6 h1:Yf2mmR8TJy+8Fa0SuQVto5SYap6IF7lNVX4Jdl8G1qA=
